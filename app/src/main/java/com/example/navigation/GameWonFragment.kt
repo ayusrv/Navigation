@@ -1,10 +1,10 @@
 package com.example.navigation
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.core.app.ShareCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
@@ -22,8 +22,30 @@ class GameWonFragment : Fragment() {
             view.findNavController().navigate(GameWonFragmentDirections.actionGameWonFragmentToTitleFragment())
         }
 
-        var args = GameWonFragmentArgs.fromBundle(requireArguments())
-        Toast.makeText(context,"Number Correct: ${args.numCorrect}, Number Questions: ${args.numQuestions}",Toast.LENGTH_LONG).show()
+
+
+        setHasOptionsMenu(true)
         return binding.root
+    }
+
+    private fun getShareIntent() : Intent{
+        val args = GameWonFragmentArgs.fromBundle(requireArguments())
+        return ShareCompat.IntentBuilder.from(requireActivity()).setText(getString(R.string.share_success_text,args.numCorrect,args.numQuestions)).setType("text/plain").intent
+    }
+
+    private fun shareSuccess(){
+        startActivity(getShareIntent())
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.winner_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.share -> shareSuccess()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
